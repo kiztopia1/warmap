@@ -38,3 +38,17 @@ export function compareCivilYmd(a: CivilYmd, b: CivilYmd): number {
   return civilToUtcOrdinal(a.year, a.month, a.day) -
     civilToUtcOrdinal(b.year, b.month, b.day);
 }
+
+/** e.g. "March 31, 2026" — civil Gregorian, locale-neutral via fixed UTC noon. */
+export function formatCivilGregorianLong(
+  ymd: CivilYmd,
+  locale: string = "en-US"
+): string {
+  const d = new Date(Date.UTC(ymd.year, ymd.month - 1, ymd.day, 12, 0, 0));
+  return new Intl.DateTimeFormat(locale, {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(d);
+}

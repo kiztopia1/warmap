@@ -1,7 +1,10 @@
 "use client";
 
 import { toEthiopian } from "ethiopian-calendar-new";
-import { getEthiopiaTodayGregorian } from "@/lib/ethiopia-civil-date";
+import {
+  formatCivilGregorianLong,
+  getEthiopiaTodayGregorian,
+} from "@/lib/ethiopia-civil-date";
 import {
   startTransition,
   useCallback,
@@ -155,7 +158,7 @@ export function HomeClient() {
     gTodayEthiopia.day
   );
   const ethiopianDateLine = formatEthiopianDateLine(ethToday);
-  const ethiopiaGregorianLine = `Gregorian (Ethiopia) ${gTodayEthiopia.year}-${String(gTodayEthiopia.month).padStart(2, "0")}-${String(gTodayEthiopia.day).padStart(2, "0")}`;
+  const gregorianDateLine = formatCivilGregorianLong(gTodayEthiopia);
 
   const clearFocusGregorian = useCallback(() => {
     setFocusGregorian(null);
@@ -457,8 +460,9 @@ export function HomeClient() {
         {active === "dashboard" ? (
           <>
             <DashboardHeader
+              calendarTabMode={calendarTabMode}
               ethiopianDateLine={ethiopianDateLine}
-              ethiopiaGregorianLine={ethiopiaGregorianLine}
+              gregorianDateLine={gregorianDateLine}
               gregorianPlannerYear={plannerDataYear}
             />
             <div className="flex min-h-0 flex-1 flex-row">
