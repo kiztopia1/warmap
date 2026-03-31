@@ -2,11 +2,20 @@
 
 import { useEffect } from "react";
 import { JANUARY_HIGHLIGHT_DAYS, type MonthKey } from "@/lib/calendar-2026";
-import { buildMonthWeeks } from "@/lib/build-month-weeks";
+import { buildMonthWeeks, type CalendarCell } from "@/lib/build-month-weeks";
 import {
   buildEthiopianMonthWeeks,
   isEthiopianMonthWallClock,
+  type EthiopianPlanCell,
 } from "@/lib/ethiopian-2026";
+import {
+  getEthiopianMiniGridCellClasses,
+  getEthiopianMiniGridDayTone,
+} from "@/lib/ethiopian-mini-grid-progress";
+import {
+  getMiniGridCellClasses,
+  getMiniGridDayTone,
+} from "@/lib/mini-grid-progress";
 import {
   ensureSixBools,
   ensureSixLines,
@@ -32,6 +41,44 @@ function taskHighlightForGregorianCell(monthKey: MonthKey, day: number): boolean
   return false;
 }
 
+function gregorianPaddingSurface(
+  yearProgress: boolean,
+  monthKey: MonthKey,
+  cell: Extract<CalendarCell, { kind: "padding" }>,
+  plannerYear: number,
+  neutralPadding: boolean
+): string {
+  if (!yearProgress) {
+    return neutralPadding && cell.placement === "trail"
+      ? "bg-panel"
+      : "bg-padding-day";
+  }
+  const p = getMiniGridCellClasses(monthKey, cell, true, plannerYear);
+  if (p) return p;
+  return neutralPadding && cell.placement === "trail"
+    ? "bg-panel"
+    : "bg-padding-day";
+}
+
+function ethiopianPaddingSurface(
+  yearProgress: boolean,
+  ethYear: number,
+  ethMonth: number,
+  cell: Extract<EthiopianPlanCell, { kind: "padding" }>,
+  neutralPadding: boolean
+): string {
+  if (!yearProgress) {
+    return neutralPadding && cell.placement === "trail"
+      ? "bg-panel"
+      : "bg-padding-day";
+  }
+  const p = getEthiopianMiniGridCellClasses(ethYear, ethMonth, cell, true);
+  if (p) return p;
+  return neutralPadding && cell.placement === "trail"
+    ? "bg-panel"
+    : "bg-padding-day";
+}
+
 type FooterHandlers = {
   monthFooter: MonthFooterSlice;
   monthFooterDone: { objectives: boolean[]; notes: boolean[] };
@@ -55,6 +102,8 @@ type GregorianCalendarProps = FooterHandlers &
     dayLineDone: Record<number, boolean[]>;
     onDayLineChange: (day: number, lineIndex: number, value: string) => void;
     onToggleDayLineDone: (day: number, lineIndex: number) => void;
+    /** Match dashboard: gray past days when the year-progress chip is on. */
+    yearProgress: boolean;
   };
 
 type EthiopianCalendarProps = FooterHandlers &
@@ -76,6 +125,7 @@ type EthiopianCalendarProps = FooterHandlers &
       day: number,
       lineIndex: number
     ) => void;
+    yearProgress: boolean;
   };
 
 type Props = GregorianCalendarProps | EthiopianCalendarProps;
@@ -148,6 +198,7 @@ function GregorianGrid(props: GregorianCalendarProps) {
     dayLineDone,
     onDayLineChange,
     onToggleDayLineDone,
+    yearProgress,
   } = props;
   const weeks = buildMonthWeeks(monthKey, plannerGregorianYear);
   const neutralPadding = isCalendarActiveMonth(monthKey, plannerGregorianYear);
@@ -162,9 +213,13 @@ function GregorianGrid(props: GregorianCalendarProps) {
                 <DayCell
                   key={ci}
                   isPadding
-                  neutralBackground={
-                    neutralPadding && cell.placement === "trail"
-                  }
+                  surfaceClass={gregorianPaddingSurface(
+                    yearProgress,
+                    monthKey,
+                    cell,
+                    plannerGregorianYear,
+                    neutralPadding
+                  )}
                 />
               );
             }
@@ -185,6 +240,12 @@ function GregorianGrid(props: GregorianCalendarProps) {
                 }
                 taskHighlight={taskHighlightForGregorianCell(monthKey, day)}
                 isToday={isCalendarToday(monthKey, day, plannerGregorianYear)}
+                yearProgress={yearProgress}
+                progressTone={getMiniGridDayTone(
+                  monthKey,
+                  day,
+                  plannerGregorianYear
+                )}
               />
             );
           })}
@@ -203,6 +264,7 @@ function EthiopianGrid(props: EthiopianCalendarProps) {
     dayLineDoneByMonth,
     onDayLineChange,
     onToggleDayLineDone,
+    yearProgress,
   } = props;
   const weeks = buildEthiopianMonthWeeks(
     ethYear,
@@ -221,20 +283,39 @@ function EthiopianGrid(props: EthiopianCalendarProps) {
                 <DayCell
                   key={ci}
                   isPadding
-                  neutralBackground={
-                    neutralPadding && cell.placement === "trail"
-                  }
+                  surfaceClass={ethiopianPaddingSurface(
+                    yearProgress,
+                    ethYear,
+                    ethMonth,
+                    cell,
+                    neutralPadding
+                  )}
                 />
               );
             }
             const g = cell.gregorian;
             if (!g) {
+              const displayProgress = yearProgress
+                ? getEthiopianMiniGridCellClasses(
+                    ethYear,
+                    ethMonth,
+                    {
+                      kind: "day",
+                      ethYear,
+                      ethMonth,
+                      ethDay: cell.ethDay,
+                      gregorian: null,
+                    },
+                    true
+                  )
+                : "";
               return (
                 <DayCell
                   key={ci}
                   isPadding={false}
                   displayOnly
                   dayNumber={cell.ethDay}
+                  displayProgressClass={displayProgress || undefined}
                 />
               );
             }
@@ -255,6 +336,12 @@ function EthiopianGrid(props: EthiopianCalendarProps) {
                 }
                 taskHighlight={taskHighlightForGregorianCell(monthKey, day)}
                 isToday={isCalendarToday(monthKey, day, plannerGregorianYear)}
+                yearProgress={yearProgress}
+                progressTone={getEthiopianMiniGridDayTone(
+                  ethYear,
+                  ethMonth,
+                  cell.ethDay
+                )}
               />
             );
           })}

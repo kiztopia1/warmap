@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import type { KeyboardEvent } from "react";
 import { spreadsheetLineKeyDown } from "@/lib/spreadsheet-input";
+import type { MiniGridDayTone } from "@/lib/mini-grid-progress";
 import {
   CALENDAR_SUB_ROW_INPUT_CLASS,
   DAY_SUB_ROWS,
@@ -10,10 +11,12 @@ import {
   ensureSixLines,
 } from "@/lib/sheet-state";
 
+type ProgressTone = MiniGridDayTone;
+
 type PaddingProps = {
   isPadding: true;
-  /** When true, use white instead of gray padding (live month / upcoming slots). */
-  neutralBackground?: boolean;
+  /** Background (+ optional text) classes for padding cells, aligned with dashboard mini-grid progress. */
+  surfaceClass: string;
 };
 
 type DayProps = {
@@ -23,22 +26,27 @@ type DayProps = {
   scrollAnchorId?: string;
   /** Ethiopian (or other) day outside planner Gregorian year — number only, no inputs. */
   displayOnly?: boolean;
+  /** When set (year-progress mode), tints the display-only cell like dashboard mini-grids. */
+  displayProgressClass?: string;
   lines?: string[];
   lineDone?: boolean[];
   onLineChange?: (lineIndex: number, value: string) => void;
   onToggleLineDone?: (lineIndex: number) => void;
   taskHighlight?: boolean;
   isToday?: boolean;
+  /** When true, gray past days (and related padding) like the dashboard year-progress chip. */
+  yearProgress?: boolean;
+  /** Ethiopia-relative past / today / default; only used when `yearProgress` is true. */
+  progressTone?: ProgressTone;
 };
 
 type Props = PaddingProps | DayProps;
 
 export function DayCell(props: Props) {
   if (props.isPadding) {
-    const padBg = props.neutralBackground ? "bg-panel" : "bg-padding-day";
     return (
       <div
-        className={`min-h-[100px] border border-border-strong ${padBg} sm:min-h-[120px] md:min-h-[140px]`}
+        className={`min-h-[100px] border border-border-strong sm:min-h-[120px] md:min-h-[140px] ${props.surfaceClass}`}
         aria-hidden
       />
     );
@@ -46,32 +54,49 @@ export function DayCell(props: Props) {
   return <DayCellInputs {...props} />;
 }
 
-function DayCellInputs({
-  dayNumber,
-  scrollAnchorId,
-  displayOnly,
-  lines,
-  lineDone,
-  onLineChange,
-  onToggleLineDone,
-  taskHighlight,
-  isToday,
-}: Omit<DayProps, "isPadding">) {
+function DayCellInputs(props: Omit<DayProps, "isPadding">) {
   const lineRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  if (displayOnly) {
+  if (props.displayOnly) {
+    const { dayNumber, displayProgressClass } = props;
+    const shell =
+      displayProgressClass?.trim() ||
+      "bg-display-muted text-neutral-600 dark:text-neutral-400";
+    const innerTint =
+      displayProgressClass?.trim() ? "" : "bg-display-muted-inner";
     return (
       <div
-        className="flex min-h-[100px] flex-col border border-border-strong bg-display-muted sm:min-h-[120px] md:min-h-[140px]"
+        className={`flex min-h-[100px] flex-col border border-border-strong sm:min-h-[120px] md:min-h-[140px] ${shell}`}
         aria-hidden
       >
-        <span className="shrink-0 px-1 pt-0.5 text-xs font-bold tabular-nums text-neutral-600 dark:text-neutral-400">
+        <span
+          className={`shrink-0 px-1 pt-0.5 text-xs font-bold tabular-nums ${displayProgressClass?.trim() ? "text-foreground" : ""}`}
+        >
           {dayNumber}
         </span>
-        <div className="min-h-0 flex-1 bg-display-muted-inner" />
+        <div
+          className={
+            innerTint
+              ? `min-h-0 flex-1 ${innerTint}`
+              : "min-h-0 flex-1 bg-black/5 dark:bg-black/20"
+          }
+        />
       </div>
     );
   }
+
+  const {
+    dayNumber,
+    scrollAnchorId,
+    lines,
+    lineDone,
+    onLineChange,
+    onToggleLineDone,
+    taskHighlight,
+    isToday,
+    yearProgress = false,
+    progressTone = "default",
+  } = props;
 
   const setLineRef = (i: number) => (el: HTMLInputElement | null) => {
     lineRefs.current[i] = el;
@@ -87,11 +112,17 @@ function DayCellInputs({
   const rowValues = ensureSixLines(lines);
   const doneFlags = ensureSixBools(lineDone);
 
-  const bgClass = taskHighlight
-    ? "bg-cell-highlight-yellow"
-    : isToday
-      ? "bg-today-light-yellow"
-      : "bg-panel";
+  const pastMuted = "bg-neutral-300 dark:bg-slate-600";
+
+  const bgClass = isToday
+    ? taskHighlight
+      ? "bg-cell-highlight-yellow"
+      : "bg-today-light-yellow"
+    : yearProgress && progressTone === "past"
+      ? pastMuted
+      : taskHighlight
+        ? "bg-cell-highlight-yellow"
+        : "bg-panel";
 
   const todayAccent =
     isToday && taskHighlight

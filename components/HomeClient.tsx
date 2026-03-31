@@ -540,6 +540,7 @@ export function HomeClient() {
               }
               focusGregorian={focusGregorian}
               onFocusGregorianConsumed={clearFocusGregorian}
+              yearProgress={dashboardYearProgress}
             />
           </div>
         ) : (
@@ -569,6 +570,7 @@ export function HomeClient() {
               }
               focusGregorian={focusGregorian}
               onFocusGregorianConsumed={clearFocusGregorian}
+              yearProgress={dashboardYearProgress}
             />
           </div>
         )}
