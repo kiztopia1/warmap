@@ -19,6 +19,8 @@ import {
 import {
   ensureSixBools,
   ensureSixLines,
+  getDayCellLinesForGregorianDate,
+  getDayLineDoneForGregorianDate,
   isCalendarActiveMonth,
   isCalendarToday,
   type MonthFooterSlice,
@@ -89,7 +91,11 @@ type FooterHandlers = {
 };
 
 type FocusProps = {
-  focusGregorian: { monthKey: MonthKey; day: number } | null;
+  focusGregorian: {
+    gregorianYear: number;
+    monthKey: MonthKey;
+    day: number;
+  } | null;
   onFocusGregorianConsumed?: () => void;
 };
 
@@ -100,8 +106,19 @@ type GregorianCalendarProps = FooterHandlers &
     monthKey: MonthKey;
     dayTexts: Record<number, string[]>;
     dayLineDone: Record<number, boolean[]>;
-    onDayLineChange: (day: number, lineIndex: number, value: string) => void;
-    onToggleDayLineDone: (day: number, lineIndex: number) => void;
+    onDayLineChange: (
+      gregorianYear: number,
+      monthKey: MonthKey,
+      day: number,
+      lineIndex: number,
+      value: string
+    ) => void;
+    onToggleDayLineDone: (
+      gregorianYear: number,
+      monthKey: MonthKey,
+      day: number,
+      lineIndex: number
+    ) => void;
     /** Match dashboard: gray past days when the year-progress chip is on. */
     yearProgress: boolean;
   };
@@ -113,14 +130,18 @@ type EthiopianCalendarProps = FooterHandlers &
     ethYear: number;
     ethMonth: number;
     dayCellTexts: Record<MonthKey, Record<number, string[]>>;
+    dayCellTextsOverflow: Record<string, string[]>;
     dayLineDoneByMonth: Record<MonthKey, Record<number, boolean[]>>;
+    dayLinesOverflow: Record<string, boolean[]>;
     onDayLineChange: (
+      gregorianYear: number,
       monthKey: MonthKey,
       day: number,
       lineIndex: number,
       value: string
     ) => void;
     onToggleDayLineDone: (
+      gregorianYear: number,
       monthKey: MonthKey,
       day: number,
       lineIndex: number
@@ -144,9 +165,9 @@ export function MonthCalendarView(props: Props) {
 
   useEffect(() => {
     if (!focusGregorian) return;
-    const { monthKey, day } = focusGregorian;
+    const { gregorianYear, monthKey, day } = focusGregorian;
     if (day < 1) return;
-    const id = `calendar-day-${monthKey}-${day}`;
+    const id = `calendar-day-${gregorianYear}-${monthKey}-${day}`;
     const handle = requestAnimationFrame(() => {
       document.getElementById(id)?.scrollIntoView({
         behavior: "smooth",
@@ -229,14 +250,25 @@ function GregorianGrid(props: GregorianCalendarProps) {
                 key={ci}
                 isPadding={false}
                 dayNumber={day}
-                scrollAnchorId={`calendar-day-${monthKey}-${day}`}
+                scrollAnchorId={`calendar-day-${plannerGregorianYear}-${monthKey}-${day}`}
                 lines={ensureSixLines(dayTexts[day])}
                 lineDone={ensureSixBools(dayLineDone[day])}
                 onLineChange={(lineIndex, value) =>
-                  onDayLineChange(day, lineIndex, value)
+                  onDayLineChange(
+                    plannerGregorianYear,
+                    monthKey,
+                    day,
+                    lineIndex,
+                    value
+                  )
                 }
                 onToggleLineDone={(lineIndex) =>
-                  onToggleDayLineDone(day, lineIndex)
+                  onToggleDayLineDone(
+                    plannerGregorianYear,
+                    monthKey,
+                    day,
+                    lineIndex
+                  )
                 }
                 taskHighlight={taskHighlightForGregorianCell(monthKey, day)}
                 isToday={isCalendarToday(monthKey, day, plannerGregorianYear)}
@@ -261,7 +293,9 @@ function EthiopianGrid(props: EthiopianCalendarProps) {
     ethYear,
     ethMonth,
     dayCellTexts,
+    dayCellTextsOverflow,
     dayLineDoneByMonth,
+    dayLinesOverflow,
     onDayLineChange,
     onToggleDayLineDone,
     yearProgress,
@@ -294,48 +328,45 @@ function EthiopianGrid(props: EthiopianCalendarProps) {
               );
             }
             const g = cell.gregorian;
-            if (!g) {
-              const displayProgress = yearProgress
-                ? getEthiopianMiniGridCellClasses(
-                    ethYear,
-                    ethMonth,
-                    {
-                      kind: "day",
-                      ethYear,
-                      ethMonth,
-                      ethDay: cell.ethDay,
-                      gregorian: null,
-                    },
-                    true
-                  )
-                : "";
-              return (
-                <DayCell
-                  key={ci}
-                  isPadding={false}
-                  displayOnly
-                  dayNumber={cell.ethDay}
-                  displayProgressClass={displayProgress || undefined}
-                />
-              );
-            }
-            const { monthKey, day } = g;
+            const { year: gYear, monthKey, day } = g;
+            const lines = getDayCellLinesForGregorianDate(
+              plannerGregorianYear,
+              dayCellTexts,
+              dayCellTextsOverflow,
+              gYear,
+              monthKey,
+              day
+            );
+            const lineDone = getDayLineDoneForGregorianDate(
+              plannerGregorianYear,
+              dayLineDoneByMonth,
+              dayLinesOverflow,
+              gYear,
+              monthKey,
+              day
+            );
             return (
               <DayCell
                 key={ci}
                 isPadding={false}
                 dayNumber={cell.ethDay}
-                scrollAnchorId={`calendar-day-${monthKey}-${day}`}
-                lines={ensureSixLines(dayCellTexts[monthKey]?.[day])}
-                lineDone={ensureSixBools(dayLineDoneByMonth[monthKey]?.[day])}
+                scrollAnchorId={`calendar-day-${gYear}-${monthKey}-${day}`}
+                lines={lines}
+                lineDone={lineDone}
                 onLineChange={(lineIndex, value) =>
-                  onDayLineChange(monthKey, day, lineIndex, value)
+                  onDayLineChange(gYear, monthKey, day, lineIndex, value)
                 }
                 onToggleLineDone={(lineIndex) =>
-                  onToggleDayLineDone(monthKey, day, lineIndex)
+                  onToggleDayLineDone(gYear, monthKey, day, lineIndex)
                 }
-                taskHighlight={taskHighlightForGregorianCell(monthKey, day)}
-                isToday={isCalendarToday(monthKey, day, plannerGregorianYear)}
+                taskHighlight={
+                  gYear === plannerGregorianYear &&
+                  taskHighlightForGregorianCell(monthKey, day)
+                }
+                isToday={
+                  gYear === plannerGregorianYear &&
+                  isCalendarToday(monthKey, day, plannerGregorianYear)
+                }
                 yearProgress={yearProgress}
                 progressTone={getEthiopianMiniGridDayTone(
                   ethYear,

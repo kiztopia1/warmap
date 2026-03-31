@@ -8,7 +8,11 @@ type Props = {
   ethYear: number;
   plannerGregorianYear: number;
   yearProgress?: boolean;
-  onDayClick?: (monthKey: MonthKey, day: number) => void;
+  onDayClick?: (
+    gregorianYear: number,
+    monthKey: MonthKey,
+    day: number
+  ) => void;
 };
 
 export function EthiopianNehasaePagumeMiniGrid({
@@ -61,37 +65,15 @@ export function EthiopianNehasaePagumeMiniGrid({
                 ? `${isFirstPagume ? "border-t-2 border-amber-800 dark:border-amber-600 " : ""}bg-amber-100/95 text-amber-950 ring-1 ring-inset ring-amber-900/25 dark:bg-amber-950/45 dark:text-amber-50 dark:ring-amber-700/35`
                 : "bg-panel text-foreground";
 
-            const gregorian = cell.gregorian;
-            const clickable = gregorian !== null;
-            const cls = `${base} ${progress} ${segment} ${
-              clickable
-                ? "w-full cursor-pointer hover:brightness-95 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-700"
-                : "cursor-default text-neutral-500 dark:text-neutral-500"
-            }`;
+            const { year: gYear, monthKey, day } = cell.gregorian;
+            const cls = `${base} ${progress} ${segment} w-full cursor-pointer hover:brightness-95 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-700`;
 
-            if (!gregorian) {
-              return (
-                <div
-                  key={`d-${wi}-${ci}`}
-                  className={cls}
-                  title={
-                    isPagume
-                      ? `Pagumē ${cell.ethDay} (outside planner year)`
-                      : `Nehasé ${cell.ethDay} (outside planner year)`
-                  }
-                >
-                  {cell.ethDay}
-                </div>
-              );
-            }
-
-            const { monthKey, day } = gregorian;
             return (
               <button
                 key={`d-${wi}-${ci}`}
                 type="button"
-                onClick={() => onDayClick?.(monthKey, day)}
-                title={`${isPagume ? "Pagumē" : "Nehasé"} ${cell.ethDay} → ${monthKey} ${day}`}
+                onClick={() => onDayClick?.(gYear, monthKey, day)}
+                title={`${isPagume ? "Pagumē" : "Nehasé"} ${cell.ethDay} → ${monthKey} ${day}, ${gYear}`}
                 className={cls}
               >
                 {cell.ethDay}

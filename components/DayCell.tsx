@@ -24,10 +24,6 @@ type DayProps = {
   dayNumber: number;
   /** Element id for scroll-into-view when opening this day from the dashboard. */
   scrollAnchorId?: string;
-  /** Ethiopian (or other) day outside planner Gregorian year — number only, no inputs. */
-  displayOnly?: boolean;
-  /** When set (year-progress mode), tints the display-only cell like dashboard mini-grids. */
-  displayProgressClass?: string;
   lines?: string[];
   lineDone?: boolean[];
   onLineChange?: (lineIndex: number, value: string) => void;
@@ -56,34 +52,6 @@ export function DayCell(props: Props) {
 
 function DayCellInputs(props: Omit<DayProps, "isPadding">) {
   const lineRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  if (props.displayOnly) {
-    const { dayNumber, displayProgressClass } = props;
-    const shell =
-      displayProgressClass?.trim() ||
-      "bg-display-muted text-neutral-600 dark:text-neutral-400";
-    const innerTint =
-      displayProgressClass?.trim() ? "" : "bg-display-muted-inner";
-    return (
-      <div
-        className={`flex min-h-[100px] flex-col border border-border-strong sm:min-h-[120px] md:min-h-[140px] ${shell}`}
-        aria-hidden
-      >
-        <span
-          className={`shrink-0 px-1 pt-0.5 text-xs font-bold tabular-nums ${displayProgressClass?.trim() ? "text-foreground" : ""}`}
-        >
-          {dayNumber}
-        </span>
-        <div
-          className={
-            innerTint
-              ? `min-h-0 flex-1 ${innerTint}`
-              : "min-h-0 flex-1 bg-black/5 dark:bg-black/20"
-          }
-        />
-      </div>
-    );
-  }
 
   const {
     dayNumber,

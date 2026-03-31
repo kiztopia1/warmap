@@ -8,7 +8,11 @@ type Props = {
   monthKey: MonthKey;
   gregorianYear: number;
   yearProgress?: boolean;
-  onDayClick?: (monthKey: MonthKey, day: number) => void;
+  onDayClick?: (
+    gregorianYear: number,
+    monthKey: MonthKey,
+    day: number
+  ) => void;
 };
 
 export function MonthMiniGrid({
@@ -58,7 +62,7 @@ export function MonthMiniGrid({
               <button
                 key={`d-${wi}-${ci}`}
                 type="button"
-                onClick={() => onDayClick?.(monthKey, day)}
+                onClick={() => onDayClick?.(gregorianYear, monthKey, day)}
                 title={`Open ${monthKey} ${day}`}
                 className={`${base} ${progress} w-full cursor-pointer hover:brightness-95 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500`}
               >

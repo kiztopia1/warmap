@@ -5,6 +5,7 @@ import {
   createInitialFieldDone,
   createInitialMonthFooter,
   createInitialQuarterNotes,
+  parseDayCellTextsOverflowObject,
   parseStoredDayCellTexts,
   parseStoredFieldDone,
   parseStoredMonthFooter,
@@ -26,6 +27,8 @@ export type PlannerYearBundle = {
   /** Ethiopian dashboard quarter notes (Meskerem-based Q1–Q4); independent of Gregorian. */
   quarterNotesEthiopian: Record<QuarterLabel, string[]>;
   dayCellTexts: Record<MonthKey, Record<number, string[]>>;
+  /** Day lines for civil Gregorian dates outside this planner year (Ethiopian tab edge days). */
+  dayCellTextsOverflow: Record<string, string[]>;
   monthFooter: Record<MonthKey, MonthFooterSlice>;
   fieldDone: FieldDoneState;
 };
@@ -35,6 +38,7 @@ function emptyBundleForYear(year: number): PlannerYearBundle {
     quarterNotes: createInitialQuarterNotes(),
     quarterNotesEthiopian: createInitialQuarterNotes(),
     dayCellTexts: createInitialDayCellTextsForYear(year),
+    dayCellTextsOverflow: {},
     monthFooter: createInitialMonthFooter(),
     fieldDone: createInitialFieldDone(),
   };
@@ -69,6 +73,11 @@ function parseBundleFromUnknown(data: unknown, year: number): PlannerYearBundle 
   if (dc && typeof dc === "object") {
     const parsed = parseStoredDayCellTexts(JSON.stringify(dc));
     if (parsed) out.dayCellTexts = parsed;
+  }
+
+  const ov = root.dayCellTextsOverflow;
+  if (ov !== undefined) {
+    out.dayCellTextsOverflow = parseDayCellTextsOverflowObject(ov);
   }
 
   const mf = root.monthFooter;

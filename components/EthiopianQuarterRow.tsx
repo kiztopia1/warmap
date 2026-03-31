@@ -18,7 +18,11 @@ type Props = {
   onNoteChange: (rowIndex: number, value: string) => void;
   onToggleNoteDone: (rowIndex: number) => void;
   yearProgress?: boolean;
-  onDashboardDayClick?: (monthKey: MonthKey, day: number) => void;
+  onDashboardDayClick?: (
+    gregorianYear: number,
+    monthKey: MonthKey,
+    day: number
+  ) => void;
 };
 
 function EmptyMonthColumn() {

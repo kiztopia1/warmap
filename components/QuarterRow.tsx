@@ -15,7 +15,11 @@ type Props = {
   onToggleNoteDone: (rowIndex: number) => void;
   /** When true, dashboard mini-grids gray out past days and highlight today. */
   yearProgress?: boolean;
-  onDashboardDayClick?: (monthKey: MonthKey, day: number) => void;
+  onDashboardDayClick?: (
+    gregorianYear: number,
+    monthKey: MonthKey,
+    day: number
+  ) => void;
 };
 
 export function QuarterRow({

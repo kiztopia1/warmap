@@ -26,8 +26,8 @@ import {
   formatEthiopianYearRangeLabel,
   getEthiopianMonthsForPlannerDisplay,
   primaryGregorianMonthForEthiopianMonth,
-  toEthiopianFromPlannerMonthDay,
 } from "@/lib/ethiopian-2026";
+import { monthKeyToIndex } from "@/lib/build-month-weeks";
 import {
   loadPlannerBundleForYear,
   savePlannerBundleForYear,
@@ -41,6 +41,7 @@ import {
   ensureQuarterRowBools,
   ensureSixBools,
   ensureSixLines,
+  gregorianDayStorageKey,
   QUARTER_LABELS,
   STORAGE_ACTIVE_VIEW,
   STORAGE_CALENDAR_TAB_MODE,
@@ -113,6 +114,9 @@ export function HomeClient() {
   const [dayCellTexts, setDayCellTexts] = useState(() =>
     createInitialDayCellTextsForYear(getPlannerGregorianYear())
   );
+  const [dayCellTextsOverflow, setDayCellTextsOverflow] = useState<
+    Record<string, string[]>
+  >({});
   const [monthFooter, setMonthFooter] = useState(createInitialMonthFooter);
   const [fieldDone, setFieldDone] = useState(createInitialFieldDone);
   const [hydrated, setHydrated] = useState(false);
@@ -120,6 +124,7 @@ export function HomeClient() {
     readDashboardYearProgress
   );
   const [focusGregorian, setFocusGregorian] = useState<{
+    gregorianYear: number;
     monthKey: MonthKey;
     day: number;
   } | null>(null);
@@ -178,6 +183,7 @@ export function HomeClient() {
       setQuarterNotesGregorian(b.quarterNotes);
       setQuarterNotesEthiopian(b.quarterNotesEthiopian);
       setDayCellTexts(b.dayCellTexts);
+      setDayCellTextsOverflow(b.dayCellTextsOverflow ?? {});
       setMonthFooter(b.monthFooter);
       setFieldDone(b.fieldDone);
       setLoadedYear(y);
@@ -192,6 +198,7 @@ export function HomeClient() {
       quarterNotes: quarterNotesGregorian,
       quarterNotesEthiopian: quarterNotesEthiopian,
       dayCellTexts,
+      dayCellTextsOverflow,
       monthFooter,
       fieldDone,
     });
@@ -200,6 +207,7 @@ export function HomeClient() {
       setQuarterNotesGregorian(b.quarterNotes);
       setQuarterNotesEthiopian(b.quarterNotesEthiopian);
       setDayCellTexts(b.dayCellTexts);
+      setDayCellTextsOverflow(b.dayCellTextsOverflow ?? {});
       setMonthFooter(b.monthFooter);
       setFieldDone(b.fieldDone);
       setLoadedYear(plannerWallYear);
@@ -213,6 +221,7 @@ export function HomeClient() {
       quarterNotes: quarterNotesGregorian,
       quarterNotesEthiopian: quarterNotesEthiopian,
       dayCellTexts,
+      dayCellTextsOverflow,
       monthFooter,
       fieldDone,
     });
@@ -220,6 +229,7 @@ export function HomeClient() {
     quarterNotesGregorian,
     quarterNotesEthiopian,
     dayCellTexts,
+    dayCellTextsOverflow,
     monthFooter,
     fieldDone,
     loadedYear,
@@ -232,11 +242,8 @@ export function HomeClient() {
       setActive((prev) => {
         if (prev === "dashboard") return prev;
         if (mode === "ethiopian" && prev.kind === "gregorian") {
-          const e = toEthiopianFromPlannerMonthDay(
-            prev.month,
-            15,
-            plannerDataYear
-          );
+          const m = monthKeyToIndex(prev.month) + 1;
+          const e = toEthiopian(plannerDataYear, m, 15);
           return { kind: "ethiopian", ethYear: e.year, ethMonth: e.month };
         }
         if (mode === "gregorian" && prev.kind === "ethiopian") {
@@ -254,20 +261,17 @@ export function HomeClient() {
   );
 
   const handleDashboardDayClick = useCallback(
-    (monthKey: MonthKey, day: number) => {
-      setFocusGregorian({ monthKey, day });
+    (gregorianYear: number, monthKey: MonthKey, day: number) => {
+      setFocusGregorian({ gregorianYear, monthKey, day });
       if (calendarTabMode === "ethiopian") {
-        const e = toEthiopianFromPlannerMonthDay(
-          monthKey,
-          day,
-          plannerDataYear
-        );
+        const m = monthKeyToIndex(monthKey) + 1;
+        const e = toEthiopian(gregorianYear, m, day);
         setActive({ kind: "ethiopian", ethYear: e.year, ethMonth: e.month });
       } else {
         setActive({ kind: "gregorian", month: monthKey });
       }
     },
-    [calendarTabMode, plannerDataYear]
+    [calendarTabMode]
   );
 
   useEffect(() => {
@@ -314,19 +318,29 @@ export function HomeClient() {
   };
 
   const updateDayLine = (
+    gregorianYear: number,
     monthKey: MonthKey,
     day: number,
     lineIndex: number,
     value: string
   ) => {
-    setDayCellTexts((prev) => {
-      const month = prev[monthKey];
-      const next = [...ensureSixLines(month[day])];
+    if (gregorianYear === plannerDataYear) {
+      setDayCellTexts((prev) => {
+        const month = prev[monthKey];
+        const next = [...ensureSixLines(month[day])];
+        next[lineIndex] = value;
+        return {
+          ...prev,
+          [monthKey]: { ...month, [day]: next },
+        };
+      });
+      return;
+    }
+    const k = gregorianDayStorageKey(gregorianYear, monthKey, day);
+    setDayCellTextsOverflow((prev) => {
+      const next = [...ensureSixLines(prev[k])];
       next[lineIndex] = value;
-      return {
-        ...prev,
-        [monthKey]: { ...month, [day]: next },
-      };
+      return { ...prev, [k]: next };
     });
   };
 
@@ -367,20 +381,30 @@ export function HomeClient() {
   };
 
   const toggleDayLineDone = (
+    gregorianYear: number,
     monthKey: MonthKey,
     day: number,
     lineIndex: number
   ) => {
     setFieldDone((prev) => {
-      const m = prev.dayLines[monthKey];
-      const lineArr = [...ensureSixBools(m[day])];
+      if (gregorianYear === plannerDataYear) {
+        const m = prev.dayLines[monthKey];
+        const lineArr = [...ensureSixBools(m[day])];
+        lineArr[lineIndex] = !lineArr[lineIndex];
+        return {
+          ...prev,
+          dayLines: {
+            ...prev.dayLines,
+            [monthKey]: { ...m, [day]: lineArr },
+          },
+        };
+      }
+      const k = gregorianDayStorageKey(gregorianYear, monthKey, day);
+      const lineArr = [...ensureSixBools(prev.dayLinesOverflow[k])];
       lineArr[lineIndex] = !lineArr[lineIndex];
       return {
         ...prev,
-        dayLines: {
-          ...prev.dayLines,
-          [monthKey]: { ...m, [day]: lineArr },
-        },
+        dayLinesOverflow: { ...prev.dayLinesOverflow, [k]: lineArr },
       };
     });
   };
@@ -518,11 +542,11 @@ export function HomeClient() {
               monthKey={active.month}
               dayTexts={dayCellTexts[active.month]}
               dayLineDone={fieldDone.dayLines[active.month]}
-              onDayLineChange={(day, lineIndex, value) =>
-                updateDayLine(active.month, day, lineIndex, value)
+              onDayLineChange={(gy, mk, day, lineIndex, value) =>
+                updateDayLine(gy, mk, day, lineIndex, value)
               }
-              onToggleDayLineDone={(day, lineIndex) =>
-                toggleDayLineDone(active.month, day, lineIndex)
+              onToggleDayLineDone={(gy, mk, day, lineIndex) =>
+                toggleDayLineDone(gy, mk, day, lineIndex)
               }
               monthFooter={monthFooter[active.month]}
               monthFooterDone={fieldDone.monthFooter[active.month]}
@@ -551,7 +575,9 @@ export function HomeClient() {
               ethYear={active.ethYear}
               ethMonth={active.ethMonth}
               dayCellTexts={dayCellTexts}
+              dayCellTextsOverflow={dayCellTextsOverflow}
               dayLineDoneByMonth={fieldDone.dayLines}
+              dayLinesOverflow={fieldDone.dayLinesOverflow}
               onDayLineChange={updateDayLine}
               onToggleDayLineDone={toggleDayLineDone}
               monthFooter={monthFooter[ethFooterMonth]}

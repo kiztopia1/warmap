@@ -9,7 +9,11 @@ type Props = {
   ethMonth: number;
   plannerGregorianYear: number;
   yearProgress?: boolean;
-  onDayClick?: (monthKey: MonthKey, day: number) => void;
+  onDayClick?: (
+    gregorianYear: number,
+    monthKey: MonthKey,
+    day: number
+  ) => void;
 };
 
 export function EthiopianMonthMiniGrid({
@@ -59,29 +63,15 @@ export function EthiopianMonthMiniGrid({
               );
             }
 
-            const gregorian = cell.gregorian;
-            const clickable = gregorian !== null;
-            const cls = `${base} ${progress} ${
-              clickable
-                ? "w-full cursor-pointer hover:brightness-95 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-600"
-                : "cursor-default text-neutral-500 dark:text-neutral-500"
-            }`;
+            const { year: gYear, monthKey, day } = cell.gregorian;
+            const cls = `${base} ${progress} w-full cursor-pointer hover:brightness-95 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-600`;
 
-            if (!gregorian) {
-              return (
-                <div key={`d-${wi}-${ci}`} className={cls} title="Outside planner year">
-                  {cell.ethDay}
-                </div>
-              );
-            }
-
-            const { monthKey, day } = gregorian;
             return (
               <button
                 key={`d-${wi}-${ci}`}
                 type="button"
-                onClick={() => onDayClick?.(monthKey, day)}
-                title={`Open ${monthKey} ${day}`}
+                onClick={() => onDayClick?.(gYear, monthKey, day)}
+                title={`Open ${monthKey} ${day}, ${gYear}`}
                 className={cls}
               >
                 {cell.ethDay}

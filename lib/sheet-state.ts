@@ -87,6 +87,45 @@ export function emptyDayCellTexts(): Record<MonthKey, Record<number, string[]>> 
   return out;
 }
 
+/** Stable key for day lines that fall outside the planner Gregorian year (same civil date = one bucket). */
+export function gregorianDayStorageKey(
+  year: number,
+  monthKey: MonthKey,
+  day: number
+): string {
+  return `${year}:${monthKey}:${day}`;
+}
+
+export function getDayCellLinesForGregorianDate(
+  plannerGregorianYear: number,
+  dayCellTexts: Record<MonthKey, Record<number, string[]>>,
+  dayCellTextsOverflow: Record<string, string[]>,
+  gregorianYear: number,
+  monthKey: MonthKey,
+  day: number
+): string[] {
+  if (gregorianYear === plannerGregorianYear) {
+    return ensureSixLines(dayCellTexts[monthKey]?.[day]);
+  }
+  const k = gregorianDayStorageKey(gregorianYear, monthKey, day);
+  return ensureSixLines(dayCellTextsOverflow[k]);
+}
+
+export function getDayLineDoneForGregorianDate(
+  plannerGregorianYear: number,
+  dayLines: Record<MonthKey, Record<number, boolean[]>>,
+  dayLinesOverflow: Record<string, boolean[]>,
+  gregorianYear: number,
+  monthKey: MonthKey,
+  day: number
+): boolean[] {
+  if (gregorianYear === plannerGregorianYear) {
+    return ensureSixBools(dayLines[monthKey]?.[day]);
+  }
+  const k = gregorianDayStorageKey(gregorianYear, monthKey, day);
+  return ensureSixBools(dayLinesOverflow[k]);
+}
+
 export function ensureSixLines(lines: string[] | undefined): string[] {
   return Array.from({ length: DAY_SUB_ROWS }, (_, i) => String(lines?.[i] ?? ""));
 }
@@ -107,6 +146,8 @@ export type FieldDoneState = {
   /** Ethiopian dashboard Q1–Q4 (Meskerem-based); separate from Gregorian when switching tabs. */
   quarterNotesEthiopian: Record<QuarterLabel, boolean[]>;
   dayLines: Record<MonthKey, Record<number, boolean[]>>;
+  /** Line-done flags for civil Gregorian dates outside the planner year (keys from gregorianDayStorageKey). */
+  dayLinesOverflow: Record<string, boolean[]>;
   monthFooter: Record<
     MonthKey,
     { objectives: boolean[]; notes: boolean[] }
@@ -135,6 +176,7 @@ export function createInitialFieldDone(): FieldDoneState {
     quarterNotes: emptyQuarterNotesDone(),
     quarterNotesEthiopian: emptyQuarterNotesDone(),
     dayLines,
+    dayLinesOverflow: {},
     monthFooter,
   };
 }
@@ -182,6 +224,15 @@ export function parseStoredFieldDone(raw: string | null): FieldDoneState | null 
           if (Array.isArray(arr)) {
             out.dayLines[mk][d] = ensureSixBools(arr.map(Boolean));
           }
+        }
+      }
+    }
+
+    const dlo = root.dayLinesOverflow;
+    if (dlo && typeof dlo === "object") {
+      for (const [key, arr] of Object.entries(dlo as Record<string, unknown>)) {
+        if (Array.isArray(arr)) {
+          out.dayLinesOverflow[key] = ensureSixBools(arr.map(Boolean));
         }
       }
     }
@@ -300,6 +351,18 @@ export function parseStoredDayCellTexts(
   } catch {
     return null;
   }
+}
+
+/** Parse `dayCellTextsOverflow` object from a planner bundle. */
+export function parseDayCellTextsOverflowObject(
+  data: unknown
+): Record<string, string[]> {
+  if (!data || typeof data !== "object") return {};
+  const out: Record<string, string[]> = {};
+  for (const [k, val] of Object.entries(data as Record<string, unknown>)) {
+    out[k] = normalizeStoredDayValue(val);
+  }
+  return out;
 }
 
 /** True when this cell is “today” (Gregorian civil date in Ethiopia / Addis Ababa). */

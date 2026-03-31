@@ -179,16 +179,15 @@ export type EthiopianPlanCell =
       ethYear: number;
       ethMonth: number;
       ethDay: number;
-      gregorian:
-        | { monthKey: MonthKey; day: number }
-        | null;
+      /** Civil Gregorian date for this Ethiopian day (single source of truth for day notes). */
+      gregorian: { year: number; monthKey: MonthKey; day: number };
     };
 
-/** Monday-first week grid; cells map to planner Gregorian keys when they fall in `plannerGregorianYear`. */
+/** Monday-first week grid; each day carries its civil Gregorian anchor for shared storage with the Gregorian month view. */
 export function buildEthiopianMonthWeeks(
   ethYear: number,
   ethMonth: number,
-  plannerGregorianYear: number
+  _plannerGregorianYear: number
 ): EthiopianPlanCell[][] {
   const n = daysInEthiopianMonth(ethYear, ethMonth);
   const g1 = toGregorian(ethYear, ethMonth, 1);
@@ -203,13 +202,11 @@ export function buildEthiopianMonthWeeks(
   }
   for (let ed = 1; ed <= n; ed++) {
     const g = toGregorian(ethYear, ethMonth, ed);
-    const gregorian =
-      g.year === plannerGregorianYear
-        ? {
-            monthKey: MONTH_ORDER[g.month - 1] as MonthKey,
-            day: g.day,
-          }
-        : null;
+    const gregorian = {
+      year: g.year,
+      monthKey: MONTH_ORDER[g.month - 1] as MonthKey,
+      day: g.day,
+    };
     cells.push({
       kind: "day",
       ethYear,
@@ -234,7 +231,7 @@ export function buildEthiopianMonthWeeks(
  */
 export function buildNehasaePagumeWeeks(
   ethYear: number,
-  plannerGregorianYear: number
+  _plannerGregorianYear: number
 ): EthiopianPlanCell[][] {
   const cells: EthiopianPlanCell[] = [];
   const g1 = toGregorian(ethYear, 12, 1);
@@ -248,13 +245,11 @@ export function buildNehasaePagumeWeeks(
   }
   for (let ed = 1; ed <= 30; ed++) {
     const g = toGregorian(ethYear, 12, ed);
-    const gregorian =
-      g.year === plannerGregorianYear
-        ? {
-            monthKey: MONTH_ORDER[g.month - 1] as MonthKey,
-            day: g.day,
-          }
-        : null;
+    const gregorian = {
+      year: g.year,
+      monthKey: MONTH_ORDER[g.month - 1] as MonthKey,
+      day: g.day,
+    };
     cells.push({
       kind: "day",
       ethYear,
@@ -266,13 +261,11 @@ export function buildNehasaePagumeWeeks(
   const pagDays = daysInEthiopianMonth(ethYear, 13);
   for (let ed = 1; ed <= pagDays; ed++) {
     const g = toGregorian(ethYear, 13, ed);
-    const gregorian =
-      g.year === plannerGregorianYear
-        ? {
-            monthKey: MONTH_ORDER[g.month - 1] as MonthKey,
-            day: g.day,
-          }
-        : null;
+    const gregorian = {
+      year: g.year,
+      monthKey: MONTH_ORDER[g.month - 1] as MonthKey,
+      day: g.day,
+    };
     cells.push({
       kind: "day",
       ethYear,
