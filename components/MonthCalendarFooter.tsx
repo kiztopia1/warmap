@@ -61,13 +61,13 @@ export function MonthCalendarFooter({
   const ntsDone = ensureSixBools(notesDone);
 
   return (
-    <div className="grid grid-cols-7 border-b border-t border-black bg-white">
+    <div className="grid grid-cols-7 border-b border-t border-border-strong bg-panel">
       <div
-        className="col-span-2 min-h-[calc(1.5rem+6*18px)] border-r border-black bg-padding-day"
+        className="col-span-2 min-h-[calc(1.5rem+6*18px)] border-r border-border-strong bg-padding-day"
         aria-hidden
       />
-      <div className="col-span-3 flex min-w-0 flex-col border-r border-black">
-        <div className="border-b border-black px-1 py-0.5 text-[10px] font-bold leading-tight text-black">
+      <div className="col-span-3 flex min-w-0 flex-col border-r border-border-strong">
+        <div className="border-b border-border-strong px-1 py-0.5 text-[10px] font-bold leading-tight text-foreground">
           Main Objectives:
         </div>
         <div className="flex flex-col">
@@ -81,14 +81,14 @@ export function MonthCalendarFooter({
               onKeyDown={onKeyDown(i, () => onToggleObjectiveDone(i))}
               spellCheck={false}
               autoComplete="off"
-              className={`${CALENDAR_SUB_ROW_INPUT_CLASS} ${objDone[i] ? "line-through decoration-black" : ""}`}
+              className={`${CALENDAR_SUB_ROW_INPUT_CLASS} ${objDone[i] ? "line-through decoration-foreground" : ""}`}
               aria-label={`Main objective row ${i + 1}`}
             />
           ))}
         </div>
       </div>
       <div className="col-span-2 flex min-w-0 flex-col">
-        <div className="border-b border-black px-1 py-0.5 text-[10px] font-bold leading-tight text-black">
+        <div className="border-b border-border-strong px-1 py-0.5 text-[10px] font-bold leading-tight text-foreground">
           Notes:
         </div>
         <div className="flex flex-col">
@@ -104,7 +104,7 @@ export function MonthCalendarFooter({
                 onKeyDown={onKeyDown(g, () => onToggleNoteDone(i))}
                 spellCheck={false}
                 autoComplete="off"
-                className={`${CALENDAR_SUB_ROW_INPUT_CLASS} ${ntsDone[i] ? "line-through decoration-black" : ""}`}
+                className={`${CALENDAR_SUB_ROW_INPUT_CLASS} ${ntsDone[i] ? "line-through decoration-foreground" : ""}`}
                 aria-label={`Month note row ${i + 1}`}
               />
             );

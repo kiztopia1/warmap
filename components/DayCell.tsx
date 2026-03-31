@@ -35,10 +35,10 @@ type Props = PaddingProps | DayProps;
 
 export function DayCell(props: Props) {
   if (props.isPadding) {
-    const padBg = props.neutralBackground ? "bg-white" : "bg-padding-day";
+    const padBg = props.neutralBackground ? "bg-panel" : "bg-padding-day";
     return (
       <div
-        className={`min-h-[100px] border border-black ${padBg} sm:min-h-[120px] md:min-h-[140px]`}
+        className={`min-h-[100px] border border-border-strong ${padBg} sm:min-h-[120px] md:min-h-[140px]`}
         aria-hidden
       />
     );
@@ -62,13 +62,13 @@ function DayCellInputs({
   if (displayOnly) {
     return (
       <div
-        className="flex min-h-[100px] flex-col border border-black bg-[#e0e0e0] sm:min-h-[120px] md:min-h-[140px]"
+        className="flex min-h-[100px] flex-col border border-border-strong bg-display-muted sm:min-h-[120px] md:min-h-[140px]"
         aria-hidden
       >
-        <span className="shrink-0 px-1 pt-0.5 text-xs font-bold tabular-nums text-gray-600">
+        <span className="shrink-0 px-1 pt-0.5 text-xs font-bold tabular-nums text-neutral-600 dark:text-neutral-400">
           {dayNumber}
         </span>
-        <div className="min-h-0 flex-1 bg-[#d8d8d8]" />
+        <div className="min-h-0 flex-1 bg-display-muted-inner" />
       </div>
     );
   }
@@ -91,7 +91,7 @@ function DayCellInputs({
     ? "bg-cell-highlight-yellow"
     : isToday
       ? "bg-today-light-yellow"
-      : "bg-white";
+      : "bg-panel";
 
   const todayAccent =
     isToday && taskHighlight
@@ -104,7 +104,7 @@ function DayCellInputs({
     <div
       id={scrollAnchorId}
       tabIndex={scrollAnchorId ? -1 : undefined}
-      className={`flex min-h-[100px] flex-col border border-black sm:min-h-[120px] md:min-h-[140px] ${bgClass} ${todayAccent}`}
+      className={`flex min-h-[100px] flex-col border border-border-strong sm:min-h-[120px] md:min-h-[140px] ${bgClass} ${todayAccent}`}
     >
       <span className="shrink-0 px-1 pt-0.5 text-xs font-bold tabular-nums">
         {dayNumber}
@@ -120,7 +120,7 @@ function DayCellInputs({
             onKeyDown={onKeyDown(i)}
             spellCheck={false}
             autoComplete="off"
-            className={`${CALENDAR_SUB_ROW_INPUT_CLASS} ${doneFlags[i] ? "line-through decoration-black" : ""}`}
+            className={`${CALENDAR_SUB_ROW_INPUT_CLASS} ${doneFlags[i] ? "line-through decoration-foreground" : ""}`}
             aria-label={`Day ${dayNumber}, line ${i + 1}`}
           />
         ))}

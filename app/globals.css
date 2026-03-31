@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #000000;
+  --page-canvas: #e8e8e8;
+  --panel: #ffffff;
+  --chrome: #f1f1f1;
+  --border-strong: #000000;
+  --border-dotted: #9ca3af;
+  --header-bar-bg: #000000;
+  --header-bar-fg: #ffffff;
   --sheet-accent: #d9ead3;
   --title-blue: #1a237e;
   --key-pink: #f4cccc;
@@ -10,11 +19,57 @@
   --padding-day: #d9d9d9;
   --cell-highlight-yellow: #fff200;
   --today-light-yellow: #fff9c4;
+  --input-line-border: #d3d3d3;
+  --display-muted: #e0e0e0;
+  --display-muted-inner: #d8d8d8;
+  --eth-column-empty: #f5f5f5;
+  --eth-column-empty-header: #d1d5db;
+  --eth-column-empty-body: #f0f0f0;
+  --focus-note-bg: rgb(239 246 255 / 0.4);
+  --dotted-grid: rgb(180 180 180);
+  --eth-month-header: #052e16;
+  --menu-backdrop: #ffffff;
+}
+
+.dark {
+  --background: #12151a;
+  --foreground: #e8eaed;
+  --page-canvas: #0a0c10;
+  --panel: #1a1f28;
+  --chrome: #252b34;
+  --border-strong: #4a5568;
+  --border-dotted: #6b7280;
+  --header-bar-bg: #1e293b;
+  --header-bar-fg: #f1f5f9;
+  --sheet-accent: #1a3d2e;
+  --title-blue: #90caf9;
+  --key-pink: #4a3036;
+  --key-blue: #243548;
+  --padding-day: #2d3544;
+  --cell-highlight-yellow: #a16207;
+  --today-light-yellow: #422006;
+  --input-line-border: #3d4654;
+  --display-muted: #2d3544;
+  --display-muted-inner: #232a36;
+  --eth-column-empty: #1f2633;
+  --eth-column-empty-header: #374151;
+  --eth-column-empty-body: #1a2029;
+  --focus-note-bg: rgb(30 58 138 / 0.28);
+  --dotted-grid: rgb(100 116 139);
+  --eth-month-header: #14532d;
+  --menu-backdrop: #1a1f28;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-page-canvas: var(--page-canvas);
+  --color-panel: var(--panel);
+  --color-chrome: var(--chrome);
+  --color-border-strong: var(--border-strong);
+  --color-border-dotted: var(--border-dotted);
+  --color-header-bar-bg: var(--header-bar-bg);
+  --color-header-bar-fg: var(--header-bar-fg);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --color-sheet-accent: var(--sheet-accent);
@@ -24,15 +79,30 @@
   --color-padding-day: var(--padding-day);
   --color-cell-highlight-yellow: var(--cell-highlight-yellow);
   --color-today-light-yellow: var(--today-light-yellow);
+  --color-display-muted: var(--display-muted);
+  --color-display-muted-inner: var(--display-muted-inner);
+  --color-eth-column-empty: var(--eth-column-empty);
+  --color-eth-column-empty-header: var(--eth-column-empty-header);
+  --color-eth-column-empty-body: var(--eth-column-empty-body);
+  --color-eth-month-header: var(--eth-month-header);
+  --color-menu-backdrop: var(--menu-backdrop);
+}
+
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
+  background: var(--page-canvas);
   color: var(--foreground);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
 /* Dashboard mini-grid dotted cell look */
 .border-dashboard-dotted {
-  border: 1px dotted rgb(180 180 180);
+  border: 1px dotted var(--dotted-grid);
 }

@@ -23,9 +23,15 @@ type Props = {
 
 function EmptyMonthColumn() {
   return (
-    <div className="flex min-w-0 flex-col border-r border-black bg-[#f5f5f5] last:border-r-0">
-      <div className="min-h-[52px] border-b border-black bg-gray-300" aria-hidden />
-      <div className="min-h-[120px] flex-1 bg-[#f0f0f0]" aria-hidden />
+    <div className="flex min-w-0 flex-col border-r border-border-strong bg-eth-column-empty last:border-r-0">
+      <div
+        className="min-h-[52px] border-b border-border-strong bg-eth-column-empty-header"
+        aria-hidden
+      />
+      <div
+        className="min-h-[120px] flex-1 bg-eth-column-empty-body"
+        aria-hidden
+      />
     </div>
   );
 }
@@ -51,15 +57,15 @@ export function EthiopianQuarterRow({
     : "repeat(3, minmax(0, 1fr))";
 
   const noteBlock = showNotes ? (
-    <div className="flex min-w-0 flex-col border-r border-black">
-      <div className="bg-black py-1.5 text-center text-xs font-bold text-white">
+    <div className="flex min-w-0 flex-col border-r border-border-strong">
+      <div className="bg-header-bar-bg py-1.5 text-center text-xs font-bold text-header-bar-fg">
         {quarterLabel}
       </div>
-      <div className="flex flex-1 flex-col bg-white">
+      <div className="flex flex-1 flex-col bg-panel">
         {rows.map((value, i) => (
           <div
             key={i}
-            className="flex min-h-[22px] flex-1 border-b border-dotted border-gray-400 last:border-b-0"
+            className="flex min-h-[22px] flex-1 border-b border-dotted border-border-dotted last:border-b-0"
           >
             <input
               type="text"
@@ -71,7 +77,7 @@ export function EthiopianQuarterRow({
                 })
               }
               autoComplete="off"
-              className={`min-h-0 w-full flex-1 border-0 bg-transparent px-1 py-0.5 text-[11px] text-black outline-none focus:bg-blue-50/40 ${doneFlags[i] ? "line-through decoration-black" : ""}`}
+              className={`min-h-0 w-full flex-1 border-0 bg-transparent px-1 py-0.5 text-[11px] text-foreground outline-none focus:bg-[var(--focus-note-bg)] ${doneFlags[i] ? "line-through decoration-foreground" : ""}`}
               aria-label={`${quarterLabel} note row ${i + 1}`}
             />
           </div>
@@ -82,7 +88,7 @@ export function EthiopianQuarterRow({
 
   return (
     <div
-      className="grid min-h-[140px] border-b border-black"
+      className="grid min-h-[140px] border-b border-border-strong"
       style={{ gridTemplateColumns: colTemplate }}
     >
       {noteBlock}
@@ -94,10 +100,10 @@ export function EthiopianQuarterRow({
           return (
             <div
               key={`neh-pag-${col.ethYear}`}
-              className="flex min-w-0 flex-col border-r border-black last:border-r-0"
+              className="flex min-w-0 flex-col border-r border-border-strong last:border-r-0"
             >
               <div
-                className="bg-green-950 py-1.5 text-center text-[10px] font-bold leading-tight text-white sm:text-xs"
+                className="bg-eth-month-header py-1.5 text-center text-[10px] font-bold leading-tight text-white sm:text-xs"
                 title={`${col.slot12.fullLabel} + Pagumē`}
               >
                 <span className="block">{col.slot12.shortLabel}</span>
@@ -121,10 +127,10 @@ export function EthiopianQuarterRow({
         return (
           <div
             key={`${slot.ethYear}-${slot.ethMonth}`}
-            className="flex min-w-0 flex-col border-r border-black last:border-r-0"
+            className="flex min-w-0 flex-col border-r border-border-strong last:border-r-0"
           >
             <div
-              className="bg-green-950 py-1.5 text-center text-[10px] font-bold leading-tight text-white sm:text-xs"
+              className="bg-eth-month-header py-1.5 text-center text-[10px] font-bold leading-tight text-white sm:text-xs"
               title={slot.fullLabel}
             >
               <span className="block">{slot.shortLabel}</span>

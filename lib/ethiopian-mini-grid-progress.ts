@@ -72,7 +72,7 @@ export function getEthiopianMiniGridCellClasses(
 
   if (!combined) {
     if (isEthiopianDashboardMonthFullyPast(ethYear, ethMonth)) {
-      return "bg-[#d4d4d4] text-black";
+      return "bg-neutral-300 text-foreground dark:bg-slate-600";
     }
     if (isEthiopianDashboardMonthFullyFuture(ethYear, ethMonth)) {
       return "";
@@ -82,13 +82,13 @@ export function getEthiopianMiniGridCellClasses(
   if (cell.kind === "padding") {
     if (combined) {
       if (cell.placement === "trail") return "";
-      return "bg-padding-day text-black";
+      return "bg-padding-day text-foreground";
     }
     const inProgress =
       !isEthiopianDashboardMonthFullyPast(ethYear, ethMonth) &&
       !isEthiopianDashboardMonthFullyFuture(ethYear, ethMonth);
     if (inProgress && cell.placement === "trail") return "";
-    return "bg-padding-day text-black";
+    return "bg-padding-day text-foreground";
   }
 
   const tone = getEthiopianMiniGridDayTone(
@@ -96,7 +96,8 @@ export function getEthiopianMiniGridCellClasses(
     cell.ethMonth,
     cell.ethDay
   );
-  if (tone === "past") return "bg-[#d4d4d4] text-black";
-  if (tone === "today") return "bg-today-light-yellow text-black font-semibold";
+  if (tone === "past") return "bg-neutral-300 text-foreground dark:bg-slate-600";
+  if (tone === "today")
+    return "bg-today-light-yellow text-foreground font-semibold";
   return "";
 }

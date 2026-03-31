@@ -33,16 +33,16 @@ export function QuarterRow({
   const doneFlags = ensureQuarterRowBools(noteDone);
 
   return (
-    <div className="grid min-h-[140px] grid-cols-[minmax(5rem,0.9fr)_repeat(3,minmax(0,1fr))] border-b border-black">
-      <div className="flex min-w-0 flex-col border-r border-black">
-        <div className="bg-black py-1.5 text-center text-xs font-bold text-white">
+    <div className="grid min-h-[140px] grid-cols-[minmax(5rem,0.9fr)_repeat(3,minmax(0,1fr))] border-b border-border-strong">
+      <div className="flex min-w-0 flex-col border-r border-border-strong">
+        <div className="bg-header-bar-bg py-1.5 text-center text-xs font-bold text-header-bar-fg">
           {quarter.label}
         </div>
-        <div className="flex flex-1 flex-col bg-white">
+        <div className="flex flex-1 flex-col bg-panel">
           {rows.map((value, i) => (
             <div
               key={i}
-              className="flex min-h-[22px] flex-1 border-b border-dotted border-gray-400 last:border-b-0"
+              className="flex min-h-[22px] flex-1 border-b border-dotted border-border-dotted last:border-b-0"
             >
               <input
                 type="text"
@@ -54,7 +54,7 @@ export function QuarterRow({
                   })
                 }
                 autoComplete="off"
-                className={`min-h-0 w-full flex-1 border-0 bg-transparent px-1 py-0.5 text-[11px] text-black outline-none focus:bg-blue-50/40 ${doneFlags[i] ? "line-through decoration-black" : ""}`}
+                className={`min-h-0 w-full flex-1 border-0 bg-transparent px-1 py-0.5 text-[11px] text-foreground outline-none focus:bg-[var(--focus-note-bg)] ${doneFlags[i] ? "line-through decoration-foreground" : ""}`}
                 aria-label={`${quarter.label} note row ${i + 1}`}
               />
             </div>
@@ -64,9 +64,9 @@ export function QuarterRow({
       {quarter.months.map((m) => (
         <div
           key={m.key}
-          className="flex min-w-0 flex-col border-r border-black last:border-r-0"
+          className="flex min-w-0 flex-col border-r border-border-strong last:border-r-0"
         >
-          <div className="bg-black py-1.5 text-center text-xs font-bold text-white">
+          <div className="bg-header-bar-bg py-1.5 text-center text-xs font-bold text-header-bar-fg">
             {m.abbr}
           </div>
           <MonthMiniGrid

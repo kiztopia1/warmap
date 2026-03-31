@@ -1,5 +1,6 @@
 import type { EthiopianMonthSlot } from "@/lib/ethiopian-2026";
 import { ethiopianSlotKey } from "@/lib/ethiopian-2026";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   MONTH_LABEL,
   MONTH_ORDER,
@@ -60,10 +61,11 @@ export function BottomTabs({
 
   return (
     <nav
-      className="sticky bottom-0 z-10 flex shrink-0 flex-wrap items-end justify-start gap-x-1 gap-y-0 border-t border-gray-400 bg-[#f1f1f1] px-1 py-1 text-[10px] sm:text-xs"
+      className="sticky bottom-0 z-10 flex shrink-0 flex-wrap items-end justify-start gap-x-1 gap-y-0 border-t border-neutral-400 bg-chrome px-1 py-1 text-[10px] sm:text-xs dark:border-slate-600"
       aria-label="View"
     >
-      <span className="flex items-center gap-0.5 pr-1 text-gray-600 select-none">
+      <ThemeToggle />
+      <span className="flex items-center gap-0.5 pr-1 text-neutral-600 select-none dark:text-neutral-400">
         <span className="px-1 font-bold" aria-hidden>
           ≡
         </span>
@@ -73,10 +75,10 @@ export function BottomTabs({
           title="Dashboard year progress: gray past days, yellow today (matches Gregorian or Ethiopian tab mode)"
           aria-label="Toggle year progress highlights on dashboard"
           aria-pressed={dashboardYearProgress}
-          className={`rounded border px-0.5 py-px text-[8px] font-bold leading-none tabular-nums hover:bg-gray-200 ${
+          className={`rounded border px-0.5 py-px text-[8px] font-bold leading-none tabular-nums hover:bg-neutral-200 dark:hover:bg-slate-600 ${
             dashboardYearProgress
-              ? "border-amber-500 bg-amber-100 text-amber-900"
-              : "border-gray-400 bg-white text-gray-700"
+              ? "border-amber-500 bg-amber-100 text-amber-900 dark:border-amber-600 dark:bg-amber-950/50 dark:text-amber-100"
+              : "border-neutral-400 bg-panel text-neutral-700 dark:border-slate-500 dark:text-neutral-200"
           }`}
         >
           {yearChip}
@@ -87,8 +89,8 @@ export function BottomTabs({
         onClick={() => onChange("dashboard")}
         className={`rounded-t px-2 py-1 font-medium underline decoration-2 underline-offset-4 ${
           active === "dashboard"
-            ? "text-blue-600 decoration-blue-600"
-            : "text-gray-600 decoration-transparent hover:text-gray-900"
+            ? "text-blue-600 decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400"
+            : "text-neutral-600 decoration-transparent hover:text-foreground dark:text-neutral-400 dark:hover:text-neutral-200"
         }`}
       >
         Dashboard{active === "dashboard" ? " ▾" : ""}
@@ -107,8 +109,8 @@ export function BottomTabs({
                 onClick={() => onChange({ kind: "gregorian", month: key })}
                 className={`rounded-t px-1.5 py-1 font-semibold tracking-wide underline decoration-2 underline-offset-4 sm:px-2 ${
                   isActive
-                    ? "text-blue-600 decoration-blue-600"
-                    : `text-gray-700 ${accent}`
+                    ? "text-blue-600 decoration-blue-600 dark:text-blue-400 dark:decoration-blue-400"
+                    : `text-neutral-700 dark:text-neutral-300 ${accent}`
                 }`}
               >
                 {MONTH_LABEL[key]}
@@ -137,8 +139,8 @@ export function BottomTabs({
                 }
                 className={`rounded-t px-1 py-1 font-semibold tracking-wide underline decoration-2 underline-offset-4 sm:px-1.5 ${
                   isActive
-                    ? "text-green-800 decoration-green-700"
-                    : "text-gray-700 decoration-green-300/60"
+                    ? "text-green-800 decoration-green-700 dark:text-green-400 dark:decoration-green-500"
+                    : "text-neutral-700 decoration-green-300/60 dark:text-neutral-300 dark:decoration-green-600/50"
                 }`}
               >
                 {slot.shortLabel}

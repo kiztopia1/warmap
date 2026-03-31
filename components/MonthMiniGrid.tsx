@@ -20,12 +20,12 @@ export function MonthMiniGrid({
   const weeks = buildMonthWeeks(monthKey, gregorianYear);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-white text-[10px] leading-none">
-      <div className="grid shrink-0 grid-cols-7 border-b border-black bg-neutral-800">
+    <div className="flex min-h-0 flex-1 flex-col bg-panel text-[10px] leading-none text-foreground">
+      <div className="grid shrink-0 grid-cols-7 border-b border-border-strong bg-neutral-800 dark:bg-slate-700">
         {WEEKDAY_LABELS.map((label) => (
           <div
             key={label}
-            className="border-l border-black py-0.5 text-center font-bold text-white first:border-l-0"
+            className="border-l border-border-strong py-0.5 text-center font-bold text-white first:border-l-0"
           >
             {label}
           </div>

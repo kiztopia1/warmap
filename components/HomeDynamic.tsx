@@ -8,8 +8,8 @@ const HomeClient = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex min-h-screen flex-col bg-[#e8e8e8] text-black">
-        <div className="mx-auto min-h-screen w-full max-w-[1800px] flex-1 border-x border-gray-400 bg-white shadow-sm" />
+      <div className="flex min-h-screen flex-col bg-page-canvas text-foreground">
+        <div className="mx-auto min-h-screen w-full max-w-[1800px] flex-1 border-x border-neutral-400 bg-panel shadow-sm dark:border-slate-600" />
       </div>
     ),
   }

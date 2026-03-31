@@ -54,7 +54,7 @@ export function getMiniGridCellClasses(
   if (!yearProgress) return "";
 
   if (isDashboardMonthFullyPast(monthKey, plannerYear)) {
-    return "bg-[#d4d4d4] text-black";
+    return "bg-neutral-300 text-foreground dark:bg-slate-600";
   }
   if (isDashboardMonthFullyFuture(monthKey, plannerYear)) {
     return "";
@@ -65,11 +65,12 @@ export function getMiniGridCellClasses(
       !isDashboardMonthFullyPast(monthKey, plannerYear) &&
       !isDashboardMonthFullyFuture(monthKey, plannerYear);
     if (inProgress && cell.placement === "trail") return "";
-    return "bg-padding-day text-black";
+    return "bg-padding-day text-foreground";
   }
 
   const tone = getMiniGridDayTone(monthKey, cell.day, plannerYear);
-  if (tone === "past") return "bg-[#d4d4d4] text-black";
-  if (tone === "today") return "bg-today-light-yellow text-black font-semibold";
+  if (tone === "past") return "bg-neutral-300 text-foreground dark:bg-slate-600";
+  if (tone === "today")
+    return "bg-today-light-yellow text-foreground font-semibold";
   return "";
 }

@@ -428,8 +428,8 @@ export function HomeClient() {
       : "jan";
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#e8e8e8] text-black">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1800px] flex-1 flex-col border-x border-gray-400 bg-white shadow-sm">
+    <div className="flex min-h-screen flex-col bg-page-canvas text-foreground">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1800px] flex-1 flex-col border-x border-neutral-400 bg-panel shadow-sm dark:border-slate-600">
         {active === "dashboard" ? (
           <>
             <DashboardHeader
@@ -438,7 +438,7 @@ export function HomeClient() {
               gregorianPlannerYear={plannerDataYear}
             />
             <div className="flex min-h-0 flex-1 flex-row">
-              <div className="flex min-w-0 flex-[3] flex-col border-t border-black">
+              <div className="flex min-w-0 flex-[3] flex-col border-t border-border-strong">
                 {calendarTabMode === "gregorian"
                   ? quarters.map((q) => (
                       <QuarterRow

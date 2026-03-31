@@ -26,12 +26,12 @@ export function EthiopianMonthMiniGrid({
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-white text-[10px] leading-none">
-      <div className="grid shrink-0 grid-cols-7 border-b border-black bg-green-950">
+    <div className="flex min-h-0 flex-1 flex-col bg-panel text-[10px] leading-none text-foreground">
+      <div className="grid shrink-0 grid-cols-7 border-b border-border-strong bg-eth-month-header">
         {WEEKDAY_LABELS.map((label) => (
           <div
             key={label}
-            className="border-l border-black py-0.5 text-center font-bold text-white first:border-l-0"
+            className="border-l border-border-strong py-0.5 text-center font-bold text-white first:border-l-0"
           >
             {label}
           </div>
@@ -64,7 +64,7 @@ export function EthiopianMonthMiniGrid({
             const cls = `${base} ${progress} ${
               clickable
                 ? "w-full cursor-pointer hover:brightness-95 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-green-600"
-                : "cursor-default text-gray-500"
+                : "cursor-default text-neutral-500 dark:text-neutral-500"
             }`;
 
             if (!gregorian) {

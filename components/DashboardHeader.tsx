@@ -19,10 +19,10 @@ export function DashboardHeader({
         <h1 className="text-xl font-bold tracking-tight text-title-blue md:text-2xl">
           {ethiopianDateLine}
         </h1>
-        <p className="mt-0.5 text-xs font-medium text-gray-600">
+        <p className="mt-0.5 text-xs font-medium text-neutral-600 dark:text-neutral-400">
           {ethiopiaGregorianLine}
         </p>
-        <p className="mt-0.5 text-[11px] text-gray-500 tabular-nums">
+        <p className="mt-0.5 text-[11px] text-neutral-500 tabular-nums dark:text-neutral-500">
           Planner year {gregorianPlannerYear}
         </p>
       </div>

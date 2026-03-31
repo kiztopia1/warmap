@@ -29,7 +29,7 @@ export const DAY_SUB_ROWS = 6;
 
 /** Shared styling for day sub-rows and month footer inputs (spreadsheet lines). */
 export const CALENDAR_SUB_ROW_INPUT_CLASS =
-  "box-border h-[18px] w-full shrink-0 border-l border-r border-b border-[#d3d3d3] bg-transparent px-0.5 text-[10px] leading-none text-black outline-none first:border-t focus:relative focus:z-10 focus:border-blue-500";
+  "box-border h-[18px] w-full shrink-0 border-l border-r border-b border-[color:var(--input-line-border)] bg-transparent px-0.5 text-[10px] leading-none text-foreground outline-none first:border-t focus:relative focus:z-10 focus:border-blue-500 dark:focus:border-blue-400";
 
 export type MonthFooterSlice = {
   objectives: string[];

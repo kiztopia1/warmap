@@ -108,18 +108,18 @@ export function MonthCalendarView(props: Props) {
   }, [focusGregorian, onFocusGregorianConsumed]);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col border-x border-black">
-      <div className="grid grid-cols-7 border-b border-t border-black">
+    <div className="flex min-h-0 flex-1 flex-col border-x border-border-strong">
+      <div className="grid grid-cols-7 border-b border-t border-border-strong">
         {WEEKDAYS.map((d) => (
           <div
             key={d}
-            className="border-l border-black bg-black py-1.5 text-center text-[10px] font-bold text-white first:border-l-0 sm:text-xs"
+            className="border-l border-border-strong bg-header-bar-bg py-1.5 text-center text-[10px] font-bold text-header-bar-fg first:border-l-0 sm:text-xs"
           >
             {d}
           </div>
         ))}
       </div>
-      <div className="grid flex-1 auto-rows-fr border-b border-black">
+      <div className="grid flex-1 auto-rows-fr border-b border-border-strong">
         {props.variant === "gregorian" ? (
           <GregorianGrid {...props} />
         ) : (

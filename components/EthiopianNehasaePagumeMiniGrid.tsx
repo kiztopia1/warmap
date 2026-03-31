@@ -20,12 +20,12 @@ export function EthiopianNehasaePagumeMiniGrid({
   const weeks = buildNehasaePagumeWeeks(ethYear, plannerGregorianYear);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-white text-[10px] leading-none">
-      <div className="grid shrink-0 grid-cols-7 border-b border-black bg-green-950">
+    <div className="flex min-h-0 flex-1 flex-col bg-panel text-[10px] leading-none text-foreground">
+      <div className="grid shrink-0 grid-cols-7 border-b border-border-strong bg-eth-month-header">
         {WEEKDAY_LABELS.map((label) => (
           <div
             key={label}
-            className="border-l border-black py-0.5 text-center font-bold text-white first:border-l-0"
+            className="border-l border-border-strong py-0.5 text-center font-bold text-white first:border-l-0"
           >
             {label}
           </div>
@@ -58,15 +58,15 @@ export function EthiopianNehasaePagumeMiniGrid({
             const isFirstPagume = isPagume && cell.ethDay === 1;
             const segment =
               isPagume
-                ? `${isFirstPagume ? "border-t-2 border-amber-800 " : ""}bg-amber-100/95 text-amber-950 ring-1 ring-inset ring-amber-900/25`
-                : "bg-white text-black";
+                ? `${isFirstPagume ? "border-t-2 border-amber-800 dark:border-amber-600 " : ""}bg-amber-100/95 text-amber-950 ring-1 ring-inset ring-amber-900/25 dark:bg-amber-950/45 dark:text-amber-50 dark:ring-amber-700/35`
+                : "bg-panel text-foreground";
 
             const gregorian = cell.gregorian;
             const clickable = gregorian !== null;
             const cls = `${base} ${progress} ${segment} ${
               clickable
                 ? "w-full cursor-pointer hover:brightness-95 focus-visible:z-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-700"
-                : "cursor-default text-gray-500"
+                : "cursor-default text-neutral-500 dark:text-neutral-500"
             }`;
 
             if (!gregorian) {
